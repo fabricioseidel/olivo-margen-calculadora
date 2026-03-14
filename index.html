@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Calculadora Margen Olivo Online</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      margin: 20px;
+      background: #0f172a;
+      color: #e5e7eb;
+    }
+    h1 {
+      font-size: 1.6rem;
+      margin-bottom: 0.2rem;
+    }
+    .card {
+      background: #020617;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+      border: 1px solid #1f2937;
+    }
+    label {
+      display: block;
+      font-size: 0.9rem;
+      margin-bottom: 4px;
+    }
+    input {
+      width: 100%;
+      padding: 6px 8px;
+      margin-bottom: 10px;
+      border-radius: 6px;
+      border: 1px solid #4b5563;
+      background: #020617;
+      color: #e5e7eb;
+      box-sizing: border-box;
+    }
+    input:focus {
+      outline: 1px solid #22c55e;
+      border-color: #22c55e;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+    }
+    button {
+      background: #22c55e;
+      border: none;
+      color: #020617;
+      padding: 8px 16px;
+      border-radius: 999px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 4px;
+    }
+    button:hover {
+      background: #16a34a;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+      font-size: 0.9rem;
+    }
+    th, td {
+      border: 1px solid #1f2937;
+      padding: 6px 8px;
+      text-align: right;
+    }
+    th {
+      background: #020617;
+      text-align: left;
+    }
+    .mono {
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+  </style>
+</head>
+<body>
+  <h1>Calculadora de Canal Online (Olivo)</h1>
+  <p style="font-size:0.9rem;margin-bottom:16px;">
+    Ajusta los parámetros y ve cómo se reparte el margen entre OlivoMarket, pasarela y tu comisión.
+  </p>
+
+  <div class="card">
+    <h2 style="font-size:1.1rem;margin-bottom:8px;">Parámetros</h2>
+    <div class="grid">
+      <div>
+        <label for="ventasBrutas">Ventas web totales (con IVA)</label>
+        <input id="ventasBrutas" type="number" value="2000000" />
+      </div>
+      <div>
+        <label for="iva">IVA (ej. 0.19)</label>
+        <input id="iva" type="number" step="0.01" value="0.19" />
+      </div>
+      <div>
+        <label for="costoSobreVenta">Costo productos / ventas (ej. 0.679)</label>
+        <input id="costoSobreVenta" type="number" step="0.001" value="0.679" />
+      </div>
+      <div>
+        <label for="comPasarela">% pasarela sobre ventas (ej. 0.025)</label>
+        <input id="comPasarela" type="number" step="0.001" value="0.025" />
+      </div>
+      <div>
+        <label for="comTu">% tu comisión sobre ventas (ej. 0.125)</label>
+        <input id="comTu" type="number" step="0.001" value="0.125" />
+      </div>
+      <div>
+        <label for="retencion">% retención boleta (ej. 0.1525)</label>
+        <input id="retencion" type="number" step="0.0001" value="0.1525" />
+      </div>
+    </div>
+    <button id="btnCalcular">Calcular</button>
+  </div>
+
+  <div class="card">
+    <h2 style="font-size:1.1rem;margin-bottom:8px;">Resultados numéricos</h2>
+    <table class="mono">
+      <tbody id="tablaResultados">
+        <!-- Se completa por JS -->
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2 style="font-size:1.1rem;margin-bottom:8px;">Distribución del margen</h2>
+    <canvas id="chart" height="120"></canvas>
+  </div>
+
+  <script>
+    function formatear(n) {
+      if (isNaN(n)) return "-";
+      return n.toLocaleString("es-CL", { maximumFractionDigits: 0 });
+    }
+
+    function calcular(params) {
+      const v = params;
+      // Ventas: neto e IVA
+      const neto_ventas = v.ventas_brutas / (1 + v.iva);
+      const iva_debito = v.ventas_brutas - neto_ventas;
+
+      // Costo productos
+      const costo_bruto = v.ventas_brutas * v.costo_sobre_venta;
+      const costo_neto = costo_bruto / (1 + v.iva);
+      const iva_credito = costo_bruto - costo_neto;
+
+      const margen_neto_productos = neto_ventas - costo_neto;
+
+      // Pasarela
+      const pasarela_neto = v.ventas_brutas * v.comision_pasarela;
+      const pasarela_iva = pasarela_neto * v.iva;
+
+      // Tu comisión
+      const comision_bruta = v.ventas_brutas * v.comision_tu_porcentaje;
+      const retencion = comision_bruta * v.retencion_honorarios;
+      const liquido = comision_bruta - retencion;
+
+      // Utilidad Olivo (sin considerar gasolina u otros fijos)
+      const utilidad_olivo = margen_neto_productos - pasarela_neto - comision_bruta;
+
+      return {
+        neto_ventas,
+        iva_debito,
+        costo_bruto,
+        costo_neto,
+        iva_credito,
+        margen_neto_productos,
+        pasarela_neto,
+        pasarela_iva,
+        comision_bruta,
+        retencion,
+        liquido,
+        utilidad_olivo,
+      };
+    }
+
+    const tabla = document.getElementById("tablaResultados");
+    const ventasBrutasInput = document.getElementById("ventasBrutas");
+    const ivaInput = document.getElementById("iva");
+    const costoSobreVentaInput = document.getElementById("costoSobreVenta");
+    const comPasarelaInput = document.getElementById("comPasarela");
+    const comTuInput = document.getElementById("comTu");
+    const retencionInput = document.getElementById("retencion");
+    const btn = document.getElementById("btnCalcular");
+
+    let chart;
+
+    function render() {
+      const params = {
+        ventas_brutas: parseFloat(ventasBrutasInput.value || "0"),
+        iva: parseFloat(ivaInput.value || "0"),
+        costo_sobre_venta: parseFloat(costoSobreVentaInput.value || "0"),
+        comision_pasarela: parseFloat(comPasarelaInput.value || "0"),
+        comision_tu_porcentaje: parseFloat(comTuInput.value || "0"),
+        retencion_honorarios: parseFloat(retencionInput.value || "0"),
+      };
+
+      const r = calcular(params);
+
+      const rows = [
+        ["Ventas brutas (con IVA)", formatear(r.neto_ventas + r.iva_debito)],
+        ["Neto ventas", formatear(r.neto_ventas)],
+        ["IVA débito", formatear(r.iva_debito)],
+        ["Costo productos (bruto)", formatear(r.costo_bruto)],
+        ["Costo productos (neto)", formatear(r.costo_neto)],
+        ["IVA crédito", formatear(r.iva_credito)],
+        ["Margen neto productos", formatear(r.margen_neto_productos)],
+        ["Pasarela (neto)", formatear(r.pasarela_neto)],
+        ["Pasarela IVA", formatear(r.pasarela_iva)],
+        ["Tu comisión bruta", formatear(r.comision_bruta)],
+        ["Retención boleta", formatear(r.retencion)],
+        ["Tu líquido estimado", formatear(r.liquido)],
+        ["Utilidad Olivo aprox.", formatear(r.utilidad_olivo)],
+      ];
+
+      tabla.innerHTML = rows
+        .map(
+          ([k, v]) =>
+            `<tr><th>${k}</th><td>${v}</td></tr>`
+        )
+        .join("");
+
+      const ctx = document.getElementById("chart").getContext("2d");
+      const data = {
+        labels: ["Utilidad Olivo", "Tu líquido", "Pasarela (neto)"],
+        datasets: [
+          {
+            label: "Monto CLP",
+            data: [r.utilidad_olivo, r.liquido, r.pasarela_neto],
+            backgroundColor: ["#22c55e", "#38bdf8", "#f97316"],
+          },
+        ],
+      };
+
+      if (chart) chart.destroy();
+      chart = new Chart(ctx, {
+        type: "bar",
+        data,
+        options: {
+          plugins: {
+            legend: { display: false },
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+            },
+          },
+        },
+      });
+    }
+
+    btn.addEventListener("click", render);
+    // Calcula al cargar
+    render();
+  </script>
+</body>
+</html>
