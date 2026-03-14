@@ -3,335 +3,336 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora Olivo - Margenes Online</title>
+    <title>Calculadora Estratégica OlivoMarket</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --secondary: #ec4899;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --success: #22c55e;
+            --danger: #ef4444;
         }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.5;
+            padding: 2rem;
         }
-        
+
         .container {
-            max-width: 1200px;
+            max-width: 1100px;
             margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            padding: 40px;
-            animation: fadeIn 0.5s ease-in;
         }
-        
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
         }
-        
+
         h1 {
-            color: #667eea;
-            margin-bottom: 10px;
-            font-size: 2.5em;
-            text-align: center;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
             -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            -webkit-fill-color: transparent;
             background-clip: text;
+            color: transparent;
+            margin-bottom: 0.5rem;
         }
-        
-        .subtitle {
-            text-align: center;
-            color: #666;
-            margin-bottom: 30px;
-            font-size: 1.1em;
-        }
-        
-        .input-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-        
-        .input-group {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 12px;
-            border: 2px solid #e9ecef;
-            transition: all 0.3s ease;
-        }
-        
-        .input-group:hover {
-            border-color: #667eea;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
-            transform: translateY(-2px);
-        }
-        
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #333;
-            font-size: 0.95em;
-        }
-        
-        input[type="number"] {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #dee2e6;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: all 0.3s ease;
-        }
-        
-        input[type="number"]:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-        
-        .results {
-            margin-top: 40px;
+
+        .subtitle { color: var(--text-muted); font-size: 1.1rem; }
+
+        .main-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 30px;
+            gap: 2rem;
         }
-        
-        .table-container {
-            background: #f8f9fa;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border);
         }
-        
-        .chart-container {
-            background: #f8f9fa;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            height: 400px;
+
+        .input-section h2 {
+            font-size: 1.25rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
-        
-        h2 {
-            color: #667eea;
-            margin-bottom: 20px;
-            font-size: 1.5em;
+
+        .form-group { margin-bottom: 1.25rem; }
+
+        label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
         }
-        
-        table {
-            width: 100%;
-            border-collapse: collapse;
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
         }
-        
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #dee2e6;
-        }
-        
-        th {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+
+        .input-wrapper span {
+            position: absolute;
+            left: 1rem;
+            color: var(--text-muted);
             font-weight: 600;
         }
-        
-        tr:hover {
-            background: #e9ecef;
+
+        input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.2s;
         }
-        
-        .highlight {
-            background: #d4edda;
-            font-weight: bold;
-            color: #155724;
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
         }
-        
-        @media (max-width: 768px) {
-            .container {
-                padding: 20px;
-            }
-            
-            .results {
-                grid-template-columns: 1fr;
-            }
-            
-            h1 {
-                font-size: 1.8em;
-            }
+
+        .results-section {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .stat-card {
+            padding: 1.25rem;
+            border-radius: 1rem;
+            background: var(--bg);
+            border: 1px solid var(--border);
+        }
+
+        .stat-label { font-size: 0.875rem; color: var(--text-muted); margin-bottom: 0.25rem; }
+        .stat-value { font-size: 1.5rem; font-weight: 700; color: var(--text); }
+        .stat-value.success { color: var(--success); }
+
+        .details-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .details-table td {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9375rem;
+        }
+
+        .details-table tr:last-child td { border-bottom: none; }
+        .details-table .label { color: var(--text-muted); }
+        .details-table .amount { text-align: right; font-weight: 600; }
+        .details-table .negative { color: var(--danger); }
+
+        .chart-box {
+            margin-top: 1rem;
+            height: 300px;
+            position: relative;
+        }
+
+        @media (max-width: 850px) {
+            .main-grid { grid-template-columns: 1fr; }
+            body { padding: 1rem; }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🫒 Calculadora Olivo - Canal Online</h1>
-        <p class="subtitle">Herramienta para calcular distribución de ingresos y márgenes</p>
-        
-        <div class="input-grid">
-            <div class="input-group">
-                <label for="ventaNeta">💰 Venta Neta (CLP)</label>
-                <input type="number" id="ventaNeta" value="2000000" min="0" step="1000">
+        <header>
+            <h1>🫒 OlivoMarket Calc</h1>
+            <p class="subtitle">Simulador de Márgenes e Impuestos para Canal Online</p>
+        </header>
+
+        <div class="main-grid">
+            <div class="card input-section">
+                <h2>⚙️ Parámetros del Negocio</h2>
+                
+                <div class="form-group">
+                    <label>Precio Venta al Cliente (IVA inc.)</label>
+                    <div class="input-wrapper">
+                        <span>$</span>
+                        <input type="number" id="ventaBruta" value="150000">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Costo de Compra (IVA inc.)</label>
+                    <div class="input-wrapper">
+                        <span>$</span>
+                        <input type="number" id="costoCompra" value="100000">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Tu Comisión por Administración (%)</label>
+                    <div class="input-wrapper">
+                        <span>%</span>
+                        <input type="number" id="comisionAdmin" value="12.5" step="0.1">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Costo Real del Delivery (Moto/Gasto)</label>
+                    <div class="input-wrapper">
+                        <span>$</span>
+                        <input type="number" id="costoDelivery" value="5000">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Comisión Pasarela de Pago (%)</label>
+                    <div class="input-wrapper">
+                        <span>%</span>
+                        <input type="number" id="comisionPasarela" value="2.5" step="0.01">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Retención Boleta Honorarios (%)</label>
+                    <div class="input-wrapper">
+                        <span>%</span>
+                        <input type="number" id="retencion" value="15.25" step="0.01">
+                    </div>
+                </div>
             </div>
-            
-            <div class="input-group">
-                <label for="compras">🛒 Compras/Costo (CLP)</label>
-                <input type="number" id="compras" value="100000" min="0" step="1000">
-            </div>
-            
-            <div class="input-group">
-                <label for="comisionCanal">📊 Comisión Canal (%)</label>
-                <input type="number" id="comisionCanal" value="8" min="0" max="100" step="0.1">
-            </div>
-            
-            <div class="input-group">
-                <label for="comisionPasarela">💳 Comisión Pasarela (%)</label>
-                <input type="number" id="comisionPasarela" value="3.49" min="0" max="100" step="0.01">
-            </div>
-            
-            <div class="input-group">
-                <label for="costoDelivery">🚚 Costo Delivery (CLP)</label>
-                <input type="number" id="costoDelivery" value="3000" min="0" step="100">
-            </div>
-            
-            <div class="input-group">
-                <label for="iva">📋 IVA (%)</label>
-                <input type="number" id="iva" value="19" min="0" max="100" step="0.1">
-            </div>
-        </div>
-        
-        <div class="results">
-            <div class="table-container">
-                <h2>📈 Resultados Detallados</h2>
-                <table id="resultsTable">
-                    <thead>
-                        <tr>
-                            <th>Concepto</th>
-                            <th>Monto (CLP)</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
+
+            <div class="card results-section">
+                <div class="stat-card">
+                    <div class="stat-label">Utilidad Final OlivoMarket (Líquida)</div>
+                    <div id="utilidadOlivo" class="stat-value success">$0</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-label">Tu Pago Líquido (Después de Retención)</div>
+                    <div id="pagoLiquido" class="stat-value" style="color: var(--primary)">$0</div>
+                </div>
+
+                <table class="details-table">
+                    <tr>
+                        <td class="label">IVA Débito (Venta)</td>
+                        <td id="ivaDebito" class="amount negative">$0</td>
+                    </tr>
+                    <tr>
+                        <td class="label">IVA Crédito (Compra)</td>
+                        <td id="ivaCredito" class="amount">$0</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Impuesto Neto a Pagar (F29)</td>
+                        <td id="ivaPagar" class="amount negative">$0</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Gasto Pasarela de Pago</td>
+                        <td id="gastoPasarela" class="amount negative">$0</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Tu Comisión Bruta</td>
+                        <td id="comisionBruta" class="amount negative">$0</td>
+                    </tr>
                 </table>
-            </div>
-            
-            <div class="chart-container">
-                <h2>🎯 Distribución Visual</h2>
-                <canvas id="distributionChart"></canvas>
+
+                <div class="chart-box">
+                    <canvas id="marginChart"></canvas>
+                </div>
             </div>
         </div>
     </div>
-    
+
     <script>
         let chart;
-        
-        function calcular() {
-            const ventaNeta = parseFloat(document.getElementById('ventaNeta').value) || 0;
-            const compras = parseFloat(document.getElementById('compras').value) || 0;
-            const comisionCanal = parseFloat(document.getElementById('comisionCanal').value) || 0;
-            const comisionPasarela = parseFloat(document.getElementById('comisionPasarela').value) || 0;
-            const costoDelivery = parseFloat(document.getElementById('costoDelivery').value) || 0;
-            const iva = parseFloat(document.getElementById('iva').value) || 0;
-            
-            const montoComisionCanal = ventaNeta * (comisionCanal / 100);
-            const montoComisionPasarela = ventaNeta * (comisionPasarela / 100);
-            const totalGastos = compras + montoComisionCanal + montoComisionPasarela + costoDelivery;
-            const utilidadBruta = ventaNeta - totalGastos;
-            const montoIVA = utilidadBruta * (iva / 100);
-            const utilidadNeta = utilidadBruta - montoIVA;
-            
-            const margenBruto = ventaNeta > 0 ? ((utilidadBruta / ventaNeta) * 100).toFixed(2) : 0;
-            const margenNeto = ventaNeta > 0 ? ((utilidadNeta / ventaNeta) * 100).toFixed(2) : 0;
-            
-            const tbody = document.querySelector('#resultsTable tbody');
-            tbody.innerHTML = `
-                <tr><td>Venta Neta</td><td>$${ventaNeta.toLocaleString('es-CL')}</td></tr>
-                <tr><td>Compras/Costos</td><td>-$${compras.toLocaleString('es-CL')}</td></tr>
-                <tr><td>Comisión Canal (${comisionCanal}%)</td><td>-$${montoComisionCanal.toLocaleString('es-CL')}</td></tr>
-                <tr><td>Comisión Pasarela (${comisionPasarela}%)</td><td>-$${montoComisionPasarela.toLocaleString('es-CL')}</td></tr>
-                <tr><td>Costo Delivery</td><td>-$${costoDelivery.toLocaleString('es-CL')}</td></tr>
-                <tr><td><strong>Utilidad Bruta</strong></td><td><strong>$${utilidadBruta.toLocaleString('es-CL')}</strong></td></tr>
-                <tr><td>Margen Bruto</td><td>${margenBruto}%</td></tr>
-                <tr><td>IVA (${iva}%)</td><td>-$${montoIVA.toLocaleString('es-CL')}</td></tr>
-                <tr class="highlight"><td><strong>Utilidad Neta</strong></td><td><strong>$${utilidadNeta.toLocaleString('es-CL')}</strong></td></tr>
-                <tr class="highlight"><td><strong>Margen Neto</strong></td><td><strong>${margenNeto}%</strong></td></tr>
-            `;
-            
-            actualizarGrafico(ventaNeta, compras, montoComisionCanal, montoComisionPasarela, costoDelivery, montoIVA, utilidadNeta);
+
+        function update() {
+            const vBruta = parseFloat(document.getElementById('ventaBruta').value) || 0;
+            const cCompra = parseFloat(document.getElementById('costoCompra').value) || 0;
+            const pAdmin = (parseFloat(document.getElementById('comisionAdmin').value) || 0) / 100;
+            const cDeliv = parseFloat(document.getElementById('costoDelivery').value) || 0;
+            const pPasa = (parseFloat(document.getElementById('comisionPasarela').value) || 0) / 100;
+            const pRet = (parseFloat(document.getElementById('retencion').value) || 0) / 100;
+
+            // 1. IVA
+            const vNeto = vBruta / 1.19;
+            const iDebito = vBruta - vNeto;
+            const cNeto = cCompra / 1.19;
+            const iCredito = cCompra - cNeto;
+            const iPagar = iDebito - iCredito;
+
+            // 2. Comisiones
+            const gPasarela = vBruta * pPasa;
+            const comBruta = vBruta * pAdmin;
+            const retencion = comBruta * pRet;
+            const pLiquido = comBruta - retencion;
+
+            // 3. Márgenes OlivoMarket
+            // El minimarket recibe Venta Bruta, paga Compra Bruta, paga F29, paga Pasarela y paga tu Comisión Bruta.
+            // El delivery lo pagas TÚ de tu comisión según el modelo de negocio hablado.
+            const utilidadOlivo = vBruta - cCompra - iPagar - gPasarela - comBruta;
+
+            // UI
+            document.getElementById('utilidadOlivo').textContent = '$' + Math.round(utilidadOlivo).toLocaleString('es-CL');
+            document.getElementById('pagoLiquido').textContent = '$' + Math.round(pLiquido).toLocaleString('es-CL');
+            document.getElementById('ivaDebito').textContent = '-$' + Math.round(iDebito).toLocaleString('es-CL');
+            document.getElementById('ivaCredito').textContent = '$' + Math.round(iCredito).toLocaleString('es-CL');
+            document.getElementById('ivaPagar').textContent = '-$' + Math.round(iPagar).toLocaleString('es-CL');
+            document.getElementById('gastoPasarela').textContent = '-$' + Math.round(gPasarela).toLocaleString('es-CL');
+            document.getElementById('comisionBruta').textContent = '-$' + Math.round(comBruta).toLocaleString('es-CL');
+
+            updateChart(cCompra, iPagar, gPasarela, comBruta, utilidadOlivo);
         }
-        
-        function actualizarGrafico(venta, compras, comisionCanal, comisionPasarela, delivery, iva, utilidad) {
-            const ctx = document.getElementById('distributionChart').getContext('2d');
-            
-            if (chart) {
-                chart.destroy();
-            }
-            
+
+        function updateChart(costo, iva, pasarela, comision, utilidad) {
+            const ctx = document.getElementById('marginChart').getContext('2d');
+            if (chart) chart.destroy();
+
             chart = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
-                    labels: ['Compras', 'Comisión Canal', 'Comisión Pasarela', 'Delivery', 'IVA', 'Utilidad Neta'],
+                    labels: ['Costo Producto', 'Impuestos (SII)', 'Pasarela Pago', 'Tu Comisión', 'Margen Olivo'],
                     datasets: [{
-                        data: [compras, comisionCanal, comisionPasarela, delivery, iva, utilidad],
-                        backgroundColor: [
-                            '#ff6384',
-                            '#36a2eb',
-                            '#ffce56',
-                            '#4bc0c0',
-                            '#9966ff',
-                            '#4caf50'
-                        ],
-                        borderWidth: 2,
-                        borderColor: '#fff'
+                        data: [costo, iva, pasarela, comision, Math.max(0, utilidad)],
+                        backgroundColor: ['#e2e8f0', '#ef4444', '#f59e0b', '#6366f1', '#22c55e'],
+                        borderWidth: 0,
+                        hoverOffset: 10
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: {
-                                padding: 15,
-                                font: {
-                                    size: 12
-                                }
-                            }
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    const label = context.label || '';
-                                    const value = context.parsed || 0;
-                                    const percentage = ((value / venta) * 100).toFixed(1);
-                                    return `${label}: $${value.toLocaleString('es-CL')} (${percentage}%)`;
-                                }
-                            }
-                        }
-                    }
+                        legend: { position: 'bottom', labels: { boxWidth: 12, font: { family: 'Plus Jakarta Sans' } } }
+                    },
+                    cutout: '70%'
                 }
             });
         }
-        
-        document.addEventListener('DOMContentLoaded', function() {
-            const inputs = document.querySelectorAll('input[type="number"]');
-            inputs.forEach(input => {
-                input.addEventListener('input', calcular);
-            });
-            
-            calcular();
+
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('input', update);
         });
+
+        update();
     </script>
-</head>
-<body>
 </body>
 </html>
